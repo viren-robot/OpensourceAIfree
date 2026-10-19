@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>App Builder AI</title>
     <!-- Tailwind CSS CDN -->
-    <script src="https://tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -30,7 +30,7 @@
         <div class="flex items-center gap-2 font-black text-xl tracking-tight text-white">
             <span class="text-brand-accent">⚡</span> App Builder AI
         </div>
-        <span class="text-xs font-mono text-gray-600 bg-gray-950 px-3 py-1 rounded-full border border-gray-900">NVAPI Engine Live</span>
+        <span class="text-xs font-mono text-gray-600 bg-gray-950 px-3 py-1 rounded-full border border-gray-900">Prototype</span>
     </header>
 
     <!-- Main Simplified Core Workspace -->
@@ -72,23 +72,28 @@
 
     <!-- Minimal Footer -->
     <footer class="p-6 text-center text-xs font-mono text-gray-700">
-        Instant deployment pipeline compiles directly to production deliverables.
+        Prototype: this downloads a placeholder log. No app is compiled yet.
     </footer>
 
     <!-- Instant Client-Side Automation Logic -->
     <script>
         let attachedFilesList = [];
+        let previewUrls = [];
 
         function handleFileSelect() {
             const fileInput = document.getElementById('mediaInput');
             const previewGrid = document.getElementById('previewGrid');
             const fileCountLabel = document.getElementById('fileCount');
-            
+
             // Append newly chosen files into globally tracked array list
             for (let file of fileInput.files) {
                 attachedFilesList.push(file);
             }
-            
+
+            // Release previous preview URLs before re-rendering fresh ones
+            previewUrls.forEach(url => URL.revokeObjectURL(url));
+            previewUrls = [];
+
             // Clear current list view to re-render fresh
             previewGrid.innerHTML = '';
             
@@ -101,7 +106,8 @@
                     
                     // Generate runtime object urls to populate markup sources dynamically
                     const fileObjectURL = URL.createObjectURL(file);
-                    
+                    previewUrls.push(fileObjectURL);
+
                     if (file.type.startsWith('image/')) {
                         const img = document.createElement('img');
                         img.src = fileObjectURL;
@@ -149,7 +155,7 @@
             }
 
             // Document compile log output layout structures details data block arrays
-            let outputLog = `=== APP BUILDER AI GENERATED LOG ===\n` +
+            let outputLog = `=== APP BUILDER AI PLACEHOLDER LOG ===\n` +
                             `Timestamp: ${new Date().toISOString()}\n\n` +
                             `Prompt Provided:\n"${userPrompt}"\n\n` +
                             `=== ATTACHED PIPELINE MEDIA DATA ===\n`;
@@ -163,19 +169,21 @@
             }
 
             outputLog += `\n====================================\n` +
-                          `// Mobile binary environment bundle placeholder file structure generated successfully via NVAPI orchestration framework.`;
+                          `// Placeholder only: no application was generated or compiled.`;
 
-            // Instantly convert text string data layout arrays to download action payload blob
+            // Convert the log into a text blob and trigger a download
             const downloadBlob = new Blob([outputLog], { type: "text/plain" });
+            const downloadUrl = window.URL.createObjectURL(downloadBlob);
             const downloaderAnchor = document.createElement("a");
-            
-            downloaderAnchor.download = "compiled-application.apk"; 
-            downloaderAnchor.href = window.URL.createObjectURL(downloadBlob);
+
+            downloaderAnchor.download = "placeholder-log.txt";
+            downloaderAnchor.href = downloadUrl;
             downloaderAnchor.style.display = "none";
-            
+
             document.body.appendChild(downloaderAnchor);
             downloaderAnchor.click();
             document.body.removeChild(downloaderAnchor);
+            setTimeout(() => window.URL.revokeObjectURL(downloadUrl), 0);
         }
     </script>
 </body>
