@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Builder AI | Prompt to APK, AAB & HTML</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#070A13',
+                            card: '#111625',
+                            accent: '#10B981', /* Emerald accent for builder look */
+                            accentHover: '#059669'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-brand-dark text-gray-100 font-sans antialiased selection:bg-brand-accent selection:text-white">
+
+    <!-- Header Navbar -->
+    <header class="border-b border-gray-800 sticky top-0 bg-brand-dark/80 backdrop-blur-md z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2 font-bold text-xl tracking-tight text-white">
+                <span class="bg-brand-accent text-brand-dark p-1 rounded-lg text-sm font-black">AI</span>
+                App Builder <span class="text-brand-accent">Engine</span>
+            </div>
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
+                <a href="#workspace" class="hover:text-white transition">Workspace</a>
+                <a href="#features" class="hover:text-white transition">Core Modes</a>
+                <a href="#outputs" class="hover:text-white transition">Supported Exports</a>
+            </nav>
+            <div class="flex items-center gap-4">
+                <span class="text-xs text-gray-500 font-mono bg-gray-900 px-2 py-1 rounded border border-gray-800">NVAPI Status: Connected</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <!-- Hero Title -->
+        <div class="text-center mb-12">
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+                Turn Prompts into Native Binaries
+            </h1>
+            <p class="mt-3 text-base text-gray-400 max-w-xl mx-auto">
+                Attach reference assets, map user flows in Plan Mode, or design visual layouts iteratively. Export instantly to production packages.
+            </p>
+        </div>
+
+        <!-- Interactive Generation Dashboard Section -->
+        <section id="workspace" class="bg-brand-card rounded-2xl border border-gray-800 p-6 sm:p-8 shadow-2xl relative overflow-hidden mb-16">
+            
+            <!-- Generation Modes Toggle Buttons -->
+            <div class="flex flex-wrap gap-3 mb-6 pb-6 border-b border-gray-800/60">
+                <button class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold tracking-wider uppercase border-2 border-brand-accent bg-brand-accent/10 text-white transition">
+                    📝 Plan Mode
+                </button>
+                <button class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold tracking-wider uppercase border border-gray-800 bg-gray-900 text-gray-400 hover:text-white hover:border-gray-700 transition">
+                    🎨 App Design Mode
+                </button>
+            </div>
+
+            <!-- Workspace Prompt UI Form -->
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Describe your application requirements</label>
+                    <textarea rows="4" placeholder="Describe the layout, state management logic, and system behaviors here..." class="w-full p-4 rounded-xl bg-gray-900 border border-gray-800 text-white placeholder-gray-600 focus:outline-none focus:border-brand-accent text-sm resize-none"></textarea>
+                </div>
+
+                <!-- Attachment and Action Controls Row -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-2">
+                    <!-- File Upload Component Button -->
+                    <div class="flex items-center">
+                        <label class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gray-900 border border-gray-800 hover:border-gray-700 cursor-pointer text-xs font-medium text-gray-300 transition">
+                            📎 Attach Design Assets / Spec Documents
+                            <input type="file" class="hidden" multiple />
+                        </label>
+                    </div>
+
+                    <!-- Execution Action Trigger Button -->
+                    <button class="bg-brand-accent hover:bg-brand-accentHover text-brand-dark font-bold px-8 py-3 rounded-xl transition shadow-lg shadow-brand-accent/10 flex items-center justify-center gap-2 text-sm">
+                        ⚡ Generate Application Files
+                    </button>
+                </div>
+            </div>
+
+            <!-- Subtle Backdrop Aura Visual Anchor -->
+            <div class="absolute -right-24 -bottom-24 w-72 h-72 bg-brand-accent/5 rounded-full blur-[100px] pointer-events-none"></div>
+        </section>
+
+        <!-- Dynamic Binary Target Capability Grid -->
+        <section id="outputs" class="mb-16">
+            <h2 class="text-xs font-bold tracking-widest text-center text-brand-accent uppercase mb-8">Production Ready Formats Compiled Automatically</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- APK Block -->
+                <div class="bg-gray-900/50 p-6 rounded-xl border border-gray-800 text-center">
+                    <div class="text-2xl mb-2">🤖</div>
+                    <h3 class="font-bold text-white text-base">Android APK</h3>
+                    <p class="text-xs text-gray-500 mt-1">Directly downloadable mobile binary ready for standalone physical device installations.</p>
+                </div>
+                <!-- AAB Block -->
+                <div class="bg-gray-900/50 p-6 rounded-xl border border-gray-800 text-center">
+                    <div class="text-2xl mb-2">📦</div>
+                    <h3 class="font-bold text-white text-base">Google Play AAB</h3>
+                    <p class="text-xs text-gray-500 mt-1">Optimized Android App Bundle format completely optimized for instant Play Store console uploads.</p>
+                </div>
+                <!-- HTML Block -->
+                <div class="bg-gray-900/50 p-6 rounded-xl border border-gray-800 text-center">
+                    <div class="text-2xl mb-2">🌐</div>
+                    <h3 class="font-bold text-white text-base">Static HTML/JS</h3>
+                    <p class="text-xs text-gray-500 mt-1">Clean, dependency-free web bundle ready for instant deployment to global edge hosting structures.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Work Execution Pipeline Feature Details -->
+        <section id="features" class="border-t border-gray-900 pt-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="text-xs font-bold text-brand-accent tracking-wider uppercase">Advanced Workflow Partitioning</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white mt-2 leading-tight">Plan Mode vs. App Design Mode</h2>
+                    <p class="text-sm text-gray-400 mt-4 leading-relaxed">
+                        Toggle between abstract software scaffolding and detailed UI iteration seamlessly. Use **Plan Mode** to construct logical sequences, database mappings, and systemic business flow charts before writing code. 
+                    </p>
+                    <p class="text-sm text-gray-400 mt-3 leading-relaxed">
+                        Switch directly into **App Design Mode** to polish structural style elements, change interface layouts, render buttons, and implement responsive visual aesthetics effortlessly via pure AI natural language adjustments.
+                    </p>
+                </div>
+                
+                <!-- Micro-Architecture Core Specifications Table -->
+                <div class="bg-brand-card rounded-xl border border-gray-800 overflow-hidden">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-gray-900 border-b border-gray-800 text-gray-400 font-mono">
+                                <th class="p-4">Engine Variable</th>
+                                <th class="p-4">System Context Architecture Target</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-800/40 text-gray-300">
+                            <tr>
+                                <td class="p-4 font-semibold text-white">Execution Core</td>
+                                <td class="p-4 text-gray-400">NVIDIA Multi-Node Acceleration Inference Inference Network</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-semibold text-white">Compilation Targets</td>
+                                <td class="p-4 text-gray-400">Application Package Binaries (.apk), Google App Bundle (.aab), Web Document (.html)</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-semibold text-white">Payload Uploads</td>
+                                <td class="p-4 text-gray-400">Multi-file asset pipelines, mock wireframe visual attachments, and technical schema imports</td>
+                            </tr>
