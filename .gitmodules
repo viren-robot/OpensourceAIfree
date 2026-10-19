@@ -1,0 +1,6 @@
+[submodule "vendor/voicebox"]
+	path = vendor/voicebox
+	url = https://github.com/jamiepine/voicebox
+[submodule "vendor/easydiffusion"]
+	path = vendor/easydiffusion
+	url = https://github.com/easydiffusion/easydiffusion
