@@ -1,0 +1,25 @@
+name: Test NVIDIA model
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call NVIDIA chat completions
+        env:
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+        run: |
+          status=$(curl -sS -o response.json -w "%{http_code}" \
+            https://integrate.api.nvidia.com/v1/chat/completions \
+            -H "Authorization: Bearer $NVIDIA_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"model":"nvidia/nemotron-3-ultra-550b-a55b","messages":[{"role":"user","content":"Reply with the word OK."}],"max_tokens":20}')
+          echo "HTTP status: $status"
+          if [ "$status" != "200" ]; then
+            head -c 500 response.json
+            echo
+            exit 1
+          fi
+          node -e 'const d = require("./response.json"); console.log("Model:", d.model); console.log("Reply:", d.choices?.[0]?.message?.content)'
