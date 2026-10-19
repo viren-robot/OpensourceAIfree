@@ -5,6 +5,9 @@ name: Build Voicebox (Windows)
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - claude/busy-planck-tme1i4
 
 jobs:
   build:
