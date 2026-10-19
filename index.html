@@ -1,1 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Voicebox Web</title>
+  <meta name="description" content="Browser clone of the Voicebox voice studio layout: write text, pick a voice profile, generate speech." />
+  <style>
+    :root {
+      --bg: #f6f6f8;
+      --panel: #ffffff;
+      --text: #15161a;
+      --muted: #6b6f7b;
+      --border: #e2e4ea;
+      --accent: #5b6ef7;
+      --accent-text: #ffffff;
+      --danger: #d64545;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0f1014;
+        --panel: #181a21;
+        --text: #eceef4;
+        --muted: #9096a6;
+        --border: #272a34;
+        --accent: #7b8cff;
+        --accent-text: #0f1014;
+        --danger: #ff6b6b;
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #0f1014;
+      --panel: #181a21;
+      --text: #eceef4;
+      --muted: #9096a6;
+      --border: #272a34;
+      --accent: #7b8cff;
+      --accent-text: #0f1014;
+      --danger: #ff6b6b;
+    }
 
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; }
+    .logo {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), #c04bf0);
+      display: grid; place-items: center; color: #fff; font-weight: 800;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 62px);
+    }
+    aside {
+      border-right: 1px solid var(--border);
+      background: var(--panel);
+      padding: 16px;
+    }
+    main { padding: 24px; max-width: 880px; width: 100%; }
+    h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 18px 0 8px; }
+    h2:first-child { margin-top: 0; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    textarea, select, input[type="text"] {
+      width: 100%;
+      font: inherit;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    textarea { min-height: 150px; resize: vertical; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .grow { flex: 1; min-width: 0; }
+    button {
+      font: inherit;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 9px 14px;
+      cursor: pointer;
+    }
+    button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 600; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    button.danger { color: var(--danger); }
+    .profile {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      padding: 10px 12px; border-radius: 8px; cursor: pointer; border: 1px solid transparent;
+    }
+    .profile:hover { background: var(--bg); }
+    .profile.active { border-color: var(--accent); background: var(--bg); }
+    .profile small { color: var(--muted); display: block; }
+    .muted { color: var(--muted); font-size: 13px; }
+    .notice {
+      font-size: 13px; color: var(--muted);
+      border-left: 3px solid var(--accent);
+      padding: 8px 12px; background: var(--bg); border-radius: 0 8px 8px 0; margin-top: 12px;
+    }
+    .history-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .history-item:last-child { border-bottom: 0; }
+    audio { width: 100%; margin-top: 8px; }
+    .sliders label { display: block; font-size: 13px; color: var(--muted); margin-top: 10px; }
+    input[type="range"] { width: 100%; }
+
+    @media (max-width: 760px) {
+      .layout { grid-template-columns: 1fr; }
+      aside { border-right: 0; border-bottom: 1px solid var(--border); }
+      main { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">V</div>
+      <span>Voicebox</span>
+    </div>
+    <button id="themeBtn" type="button" aria-label="Toggle theme">Theme</button>
+  </header>
+
+  <div class="layout">
+    <aside>
+      <h2>Voice profiles</h2>
+      <div id="profiles"></div>
+
+      <h2>New profile</h2>
+      <div class="card" style="padding:12px">
+        <input id="profileName" type="text" placeholder="Profile name" aria-label="Profile name" />
+        <div style="height:8px"></div>
+        <input id="profileSample" type="file" accept="audio/*" aria-label="Voice sample" style="font:inherit;color:var(--muted);width:100%" />
+        <div style="height:8px"></div>
+        <button id="addProfile" class="primary" type="button" style="width:100%">Save profile</button>
+        <p class="muted" style="margin:8px 0 0">Stored only in this browser.</p>
+      </div>
+    </aside>
+
+    <main>
+      <div class="card">
+        <h2 style="margin-top:0">Text to speech</h2>
+        <textarea id="text" placeholder="Type something for the selected voice to say…">Welcome to Voicebox. Generate speech from text, in a voice you choose.</textarea>
+
+        <div class="sliders">
+          <label>Rate <span id="rateVal">1.00</span>
+            <input id="rate" type="range" min="0.5" max="1.5" step="0.05" value="1" />
+          </label>
+          <label>Pitch <span id="pitchVal">1.00</span>
+            <input id="pitch" type="range" min="0.5" max="1.5" step="0.05" value="1" />
+          </label>
+        </div>
+
+        <div class="row" style="margin-top:14px">
+          <select id="voice" class="grow" aria-label="System voice"></select>
+          <button id="speak" class="primary" type="button">Generate</button>
+          <button id="stop" type="button">Stop</button>
+        </div>
+
+        <p class="notice" id="activeProfile">Using: default voice</p>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-top:0">History</h2>
+        <div id="history"><p class="muted" style="margin:0">Nothing generated yet.</p></div>
+      </div>
+
+      <p class="notice">
+        This page is a layout and workflow clone of Voicebox. It does not clone voices or run the Voicebox models.
+        Speech comes from your browser's built-in voices. A saved profile is only a label on the output.
+        Voicebox itself runs the real voice models locally.
+      </p>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var STORAGE_KEY = "voicebox-web-profiles";
+      var profiles = [];
+      var activeId = null;
+      var history = [];
+
+      var els = {
+        profiles: document.getElementById("profiles"),
+        name: document.getElementById("profileName"),
+        sample: document.getElementById("profileSample"),
+        add: document.getElementById("addProfile"),
+        text: document.getElementById("text"),
+        rate: document.getElementById("rate"),
+        pitch: document.getElementById("pitch"),
+        rateVal: document.getElementById("rateVal"),
+        pitchVal: document.getElementById("pitchVal"),
+        voice: document.getElementById("voice"),
+        speak: document.getElementById("speak"),
+        stop: document.getElementById("stop"),
+        active: document.getElementById("activeProfile"),
+        history: document.getElementById("history"),
+        theme: document.getElementById("themeBtn")
+      };
+
+      function loadProfiles() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          profiles = raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          profiles = [];
+        }
+      }
+
+      function saveProfiles() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles));
+        } catch (e) { /* storage blocked: profiles last for this page only */ }
+      }
+
+      function activeProfile() {
+        for (var i = 0; i < profiles.length; i++) {
+          if (profiles[i].id === activeId) return profiles[i];
+        }
+        return null;
+      }
+
+      function renderProfiles() {
+        els.profiles.innerHTML = "";
+        var all = [{ id: null, name: "Default voice", note: "Browser voice" }].concat(
+          profiles.map(function (p) { return { id: p.id, name: p.name, note: "Saved profile" }; })
+        );
+        all.forEach(function (p) {
+          var row = document.createElement("div");
+          row.className = "profile" + (p.id === activeId ? " active" : "");
+          row.tabIndex = 0;
+          var label = document.createElement("div");
+          var strong = document.createElement("strong");
+          strong.textContent = p.name;
+          var small = document.createElement("small");
+          small.textContent = p.note;
+          label.appendChild(strong);
+          label.appendChild(small);
+          row.appendChild(label);
+          if (p.id) {
+            var del = document.createElement("button");
+            del.type = "button";
+            del.className = "danger";
+            del.textContent = "×";
+            del.setAttribute("aria-label", "Delete " + p.name);
+            del.addEventListener("click", function (ev) {
+              ev.stopPropagation();
+              deleteProfile(p.id);
+            });
+            row.appendChild(del);
+          }
+          row.addEventListener("click", function () { selectProfile(p.id); });
+          row.addEventListener("keydown", function (ev) {
+            if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); selectProfile(p.id); }
+          });
+          els.profiles.appendChild(row);
+        });
+        var ap = activeProfile();
+        els.active.textContent = "Using: " + (ap ? ap.name : "default voice");
+      }
+
+      function selectProfile(id) {
+        activeId = id;
+        renderProfiles();
+      }
+
+      function deleteProfile(id) {
+        profiles = profiles.filter(function (p) { return p.id !== id; });
+        if (activeId === id) activeId = null;
+        saveProfiles();
+        renderProfiles();
+      }
+
+      // Keeps the profile name and the sample's file name. The browser cannot
+      // clone the voice from the sample, so profiles only label the output.
+      els.add.addEventListener("click", function () {
+        var name = els.name.value.trim();
+        if (!name) { els.name.focus(); return; }
+        var id = String(Date.now());
+        profiles.push({
+          id: id,
+          name: name,
+          sampleName: els.sample.files[0] ? els.sample.files[0].name : null
+        });
+        saveProfiles();
+        els.name.value = "";
+        els.sample.value = "";
+        activeId = id;
+        renderProfiles();
+      });
+
+      function loadVoices() {
+        var voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+        els.voice.innerHTML = "";
+        if (!voices.length) {
+          var opt = document.createElement("option");
+          opt.textContent = "No browser voices available";
+          els.voice.appendChild(opt);
+          els.speak.disabled = true;
+          return;
+        }
+        els.speak.disabled = false;
+        voices.forEach(function (v, i) {
+          var opt = document.createElement("option");
+          opt.value = String(i);
+          opt.textContent = v.name + " (" + v.lang + ")";
+          els.voice.appendChild(opt);
+        });
+      }
+
+      function speak() {
+        var text = els.text.value.trim();
+        if (!text || !window.speechSynthesis) return;
+        var voices = speechSynthesis.getVoices();
+        var u = new SpeechSynthesisUtterance(text);
+        var chosen = voices[Number(els.voice.value)];
+        if (chosen) u.voice = chosen;
+        u.rate = Number(els.rate.value);
+        u.pitch = Number(els.pitch.value);
+        speechSynthesis.cancel();
+        speechSynthesis.speak(u);
+
+        history.unshift({
+          text: text,
+          profile: (activeProfile() || { name: "Default voice" }).name,
+          time: new Date().toLocaleTimeString()
+        });
+        history = history.slice(0, 10);
+        renderHistory();
+      }
+
+      function renderHistory() {
+        if (!history.length) {
+          els.history.innerHTML = '<p class="muted" style="margin:0">Nothing generated yet.</p>';
+          return;
+        }
+        els.history.innerHTML = "";
+        history.forEach(function (h) {
+          var item = document.createElement("div");
+          item.className = "history-item";
+          var meta = document.createElement("div");
+          meta.className = "muted";
+          meta.textContent = h.time + " · " + h.profile;
+          var body = document.createElement("div");
+          body.textContent = h.text.length > 140 ? h.text.slice(0, 140) + "…" : h.text;
+          item.appendChild(meta);
+          item.appendChild(body);
+          els.history.appendChild(item);
+        });
+      }
+
+      els.speak.addEventListener("click", speak);
+      els.stop.addEventListener("click", function () {
+        if (window.speechSynthesis) speechSynthesis.cancel();
+      });
+      els.rate.addEventListener("input", function () { els.rateVal.textContent = Number(els.rate.value).toFixed(2); });
+      els.pitch.addEventListener("input", function () { els.pitchVal.textContent = Number(els.pitch.value).toFixed(2); });
+
+      els.theme.addEventListener("click", function () {
+        var root = document.documentElement;
+        var current = root.getAttribute("data-theme");
+        var dark = current === "dark" || (!current && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        root.setAttribute("data-theme", dark ? "light" : "dark");
+      });
+
+      if (window.speechSynthesis) {
+        loadVoices();
+        speechSynthesis.onvoiceschanged = loadVoices;
+      } else {
+        els.voice.innerHTML = "<option>Speech synthesis not supported</option>";
+        els.speak.disabled = true;
+      }
+
+      loadProfiles();
+      renderProfiles();
+    })();
+  </script>
+</body>
+</html>
